@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category - KrushakFarm</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    /* Minimized Navigation */
+    .navbar {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2d7a2d;
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .back-btn, .cart-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .back-btn {
+      background: #f8f9fa;
+      color: #495057;
+      border: 1px solid #dee2e6;
+    }
+
+    .back-btn:hover {
+      background: #e9ecef;
+      transform: translateY(-1px);
+    }
+
+    .cart-btn {
+      background: linear-gradient(135deg, #2d7a2d, #4caf50);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .cart-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(45, 122, 45, 0.3);
+    }
+
+    .cart-count {
+      background: rgba(255, 255, 255, 0.9);
+      color: #2d7a2d;
+      padding: 0.2rem 0.4rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    /* Hero Section - More Compact */
+    .hero-section {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: linear-gradient(135deg, rgba(45, 122, 45, 0.1), rgba(76, 175, 80, 0.1));
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #2d7a2d;
+      margin-bottom: 0.75rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.5;
+    }
+
+    /* Equal Size Category Stats */
+    .category-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.25rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #2d7a2d, #4caf50);
+      transform: translateY(-4px);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover::before {
+      transform: translateY(0);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-number {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #2d7a2d;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.85rem;
+      line-height: 1.2;
+    }
+
+    /* Products Grid - Improved Spacing */
+    .products-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .products-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .products-title {
+      font-size: 1.75rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .sort-filter {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #dee2e6;
+      background: white;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      border-color: #2d7a2d;
+      background: #2d7a2d;
+      color: white;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Enhanced Product Cards - Uniform Size */
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+      position: relative;
+      cursor: pointer;
+      height: 380px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.05);
+    }
+
+    .product-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 140px;
+      background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+    }
+
+    .product-card:hover .product-overlay {
+      opacity: 1;
+    }
+
+    .quick-add-btn {
+      background: white;
+      color: #2d7a2d;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      font-size: 0.85rem;
+    }
+
+    .quick-add-btn:hover {
+      background: #2d7a2d;
+      color: white;
+    }
+
+    .product-info {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-category {
+      background: linear-gradient(135deg, #2d7a2d, #4caf50);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 0.6rem;
+      align-self: flex-start;
+    }
+
+    .product-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+
+    .product-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2d7a2d;
+      margin-bottom: 0.4rem;
+    }
+
+    .product-details {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.6rem 0;
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .product-stock {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    .out-of-stock {
+      color: #f44336;
+    }
+
+    .farmer-info {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid #eee;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .farmer-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #2d7a2d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.65rem;
+    }
+
+    .add-to-cart-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, #2d7a2d, #4caf50);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: auto;
+    }
+
+    .add-to-cart-btn:hover {
+      background: linear-gradient(135deg, #246b24, #43a047);
+      transform: translateY(-1px);
+    }
+
+    .add-to-cart-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading States */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #2d7a2d;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: #666;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      color: #ddd;
+      margin-bottom: 1rem;
+    }
+
+    /* Success Animation */
+    .success-popup {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: #4caf50;
+      color: white;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      z-index: 10000;
+      font-size: 0.85rem;
+    }
+
+    .success-popup.show {
+      transform: translateX(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0.5rem 1rem;
+        height: 55px;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+      }
+
+      .nav-actions {
+        gap: 0.75rem;
+      }
+
+      .back-btn, .cart-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.9rem;
+        padding: 0 1rem;
+      }
+
+      .hero-section {
+        padding: 2rem 1rem;
+      }
+      
+      .category-stats {
+        gap: 1rem;
+      }
+
+      .stat-card {
+        width: 100px;
+        height: 100px;
+        padding: 1rem;
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+
+      .products-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .sort-filter {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .products-container {
+        padding: 2rem 1rem;
+      }
+
+      .product-card {
+        height: 350px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0.5rem;
+      }
+
+      .nav-actions {
+        gap: 0.5rem;
+      }
+
+      .back-btn, .cart-btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+      }
+
+      .category-stats {
+        flex-direction: column;
+        align-items: center;
+        max-width: 200px;
+      }
+
+      .stat-card {
+        width: 140px;
+        height: 90px;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .product-card {
+        max-width: 100%;
+        height: 340px;
+      }
+
+      .sort-filter {
+        gap: 0.5rem;
+      }
+
+      .filter-btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Minimized Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">KrushakFarm</a>
+    <div class="nav-actions">
+      <a href="index.html" class="back-btn">← Home</a>
+      <a href="cart.html" class="cart-btn">
+        🛒 <span class="cart-count" id="cart-count">0</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1 class="hero-title" id="category-title">Fresh Vegetables</h1>
+    <p class="hero-subtitle" id="category-description">
+      Discover our premium selection of fresh, organic vegetables sourced directly from local farmers
+    </p>
+    <div class="category-stats">
+      <div class="stat-card">
+        <div class="stat-number" id="product-count">0</div>
+        <div class="stat-label">Products Available</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="farmer-count">0</div>
+        <div class="stat-label">Local Farmers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Fresh & Organic</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Container -->
+  <div class="products-container">
+    <div class="products-header">
+      <h2 class="products-title">Browse Products</h2>
+      <div class="sort-filter">
+        <button class="filter-btn active" data-sort="name">Name</button>
+        <button class="filter-btn" data-sort="price-low">Price ↑</button>
+        <button class="filter-btn" data-sort="price-high">Price ↓</button>
+        <button class="filter-btn" data-sort="newest">Latest</button>
+      </div>
+    </div>
+    
+    <div class="products-grid" id="products-grid">
+      <!-- Products will be loaded here -->
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="loading-state">
+      <div class="spinner"></div>
+      <p>Loading fresh products...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="empty-state" style="display: none;">
+      <div class="empty-icon">🌾</div>
+      <h3>No products found</h3>
+      <p>We're working hard to stock this category with fresh products!</p>
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div class="success-popup" id="success-popup">
+    <span id="success-message">Added to cart!</span>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api";
+    let currentProducts = [];
+    let authToken = localStorage.getItem('authToken');
+
+    // Get category from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category') || 'Vegetables';
+
+    // Category configurations
+    const categoryConfig = {
+      'Vegetables': {
+        title: 'Fresh Vegetables',
+        description: 'Discover our premium selection of fresh, organic vegetables sourced directly from local farmers',
+        apiCategory: 'Vegetables'
+      },
+      'Fruits': {
+        title: 'Fresh Fruits',
+        description: 'Sweet and juicy fruits picked at peak ripeness from our trusted farming partners',
+        apiCategory: 'Fruits'
+      },
+      'Grains': {
+        title: 'Grains & Cereals',
+        description: 'Nutritious grains and cereals grown with traditional farming methods',
+        apiCategory: 'Grains'
+      },
+      'Dairy': {
+        title: 'Dairy Products',
+        description: 'Fresh dairy products from grass-fed cattle and healthy farms',
+        apiCategory: 'Dairy'
+      }
+    };
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      setupCategory();
+      loadProducts();
+      updateCartCount();
+      setupSortFilters();
+    });
+
+    function setupCategory() {
+      const config = categoryConfig[category] || categoryConfig['Vegetables'];
+      document.getElementById('category-title').textContent = config.title;
+      document.getElementById('category-description').textContent = config.description;
+      document.title = `${config.title} - KrushakFarm`;
+    }
+
+    async function loadProducts() {
+      try {
+        showLoading(true);
+        const config = categoryConfig[category] || categoryConfig['Vegetables'];
+        
+        const response = await fetch(`${API_URL}/products?category=${config.apiCategory}`);
+        const products = await response.json();
+        
+        currentProducts = products;
+        renderProducts(products);
+        updateStats(products);
+        
+      } catch (error) {
+        console.error('Error loading products:', error);
+        showEmptyState();
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function renderProducts(products) {
+      const grid = document.getElementById('products-grid');
+      
+      if (!products || products.length === 0) {
+        showEmptyState();
+        return;
+      }
+
+      grid.innerHTML = products.map(product => `
+        <div class="product-card">
+          <img src="${product.image}" alt="${product.name}" class="product-image" 
+               onerror="this.src='images/placeholder.png'">
+          
+          <div class="product-overlay">
+            <button class="quick-add-btn" onclick="addToCart('${product._id}')">
+              Quick Add to Cart
+            </button>
+          </div>
+
+          <div class="product-info">
+            <span class="product-category">${product.category}</span>
+            <h3 class="product-name">${product.name}</h3>
+            <div class="product-price">₹${product.price}</div>
+            
+            <div class="product-details">
+              <span>Per ${product.unit}</span>
+              <span class="product-stock ${product.quantity > 0 ? '' : 'out-of-stock'}">
+                ${product.quantity > 0 ? `${product.quantity} ${product.unit} available` : 'Out of stock'}
+              </span>
+            </div>
+
+            ${product.farmerId && product.farmerId.name ? `
+              <div class="farmer-info">
+                <div class="farmer-avatar">${product.farmerId.name.charAt(0).toUpperCase()}</div>
+                <span>By ${product.farmerId.name}</span>
+              </div>
+            ` : ''}
+
+            <button class="add-to-cart-btn" 
+                    onclick="addToCart('${product._id}')"
+                    ${product.quantity <= 0 ? 'disabled' : ''}>
+              ${product.quantity > 0 ? '🛒 Add to Cart' : 'Out of Stock'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('empty-state').style.display = 'none';
+    }
+
+    function updateStats(products) {
+      document.getElementById('product-count').textContent = products.length;
+      
+      const uniqueFarmers = new Set(products
+        .filter(p => p.farmerId && p.farmerId._id)
+        .map(p => p.farmerId._id)
+      ).size;
+      
+      document.getElementById('farmer-count').textContent = uniqueFarmers;
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading-state').style.display = show ? 'block' : 'none';
+      document.getElementById('products-grid').style.display = show ? 'none' : 'grid';
+    }
+
+    function showEmptyState() {
+      document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('products-grid').style.display = 'none';
+    }
+
+    function setupSortFilters() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove active class from all buttons
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          const sortType = btn.getAttribute('data-sort');
+          sortProducts(sortType);
+        });
+      });
+    }
+
+    function sortProducts(sortType) {
+      let sortedProducts = [...currentProducts];
+      
+      switch(sortType) {
+        case 'price-low':
+          sortedProducts.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-high':
+          sortedProducts.sort((a, b) => b.price - a.price);
+          break;
+        case 'newest':
+          sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          break;
+        default: // name
+          sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+      }
+      
+      renderProducts(sortedProducts);
+    }
+
+    async function addToCart(productId) {
+      if (!authToken) {
+        alert('Please login to add items to cart');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/cart/add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ productId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showSuccessMessage('Added to cart!');
+          updateCartCount();
+        } else {
+          throw new Error(data.message || 'Failed to add to cart');
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('Error adding to cart: ' + error.message);
+      }
+    }
+
+    async function updateCartCount() {
+      if (!authToken) {
+        document.getElementById('cart-count').textContent = '0';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/cart`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (response.ok) {
+          const cartItems = await response.json();
+          const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+          document.getElementById('cart-count').textContent = String(totalItems);
+        }
+      } catch (error) {
+        console.error('Error updating cart count:', error);
+        document.getElementById('cart-count').textContent = '0';
+      }
+    }
+
+    function showSuccessMessage(message) {
+      const popup = document.getElementById('success-popup');
+      const messageEl = document.getElementById('success-message');
+      
+      messageEl.textContent = message;
+      popup.classList.add('show');
+      
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

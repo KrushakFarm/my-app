@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Orders - KrushakFarm</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+  <h1>My Orders</h1>
+  <div id="ordersContainer">Loading...</div>
+
+  <script>
+    async function loadOrders() {
+      const authToken = localStorage.getItem("authToken");
+      
+      if (!authToken) {
+        document.getElementById("ordersContainer").innerHTML = "⚠ Please login first.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/orders`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (res.status === 401) {
+          // Don't automatically logout - just show session expired message
+          document.getElementById("ordersContainer").innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <p>⚠ Your session has expired.</p>
+              <button onclick="window.location.href='index.html'">Return to Home & Login Again</button>
+            </div>
+          `;
+          return;
+        }
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+
+        if (data.success && data.orders) {
+          let html = "";
+          data.orders.forEach(order => {
+            html += `<div class="order">
+              <h3>Order ID: ${order._id}</h3>
+              <p>Status: ${order.status}</p>
+              <p>Total: ₹${order.totalAmount}</p>
+              <p>Payment: ${order.paymentMethod}</p>
+              <ul>
+                ${order.items.map(i => `<li>${i.productName} x ${i.quantity}</li>`).join("")}
+              </ul>
+            </div>`;
+          });
+          document.getElementById("ordersContainer").innerHTML = html || "No orders found.";
+        } else {
+          document.getElementById("ordersContainer").innerHTML = "No orders found.";
+        }
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        document.getElementById("ordersContainer").innerHTML = `Error loading orders: ${error.message}`;
+      }
+    }
+    loadOrders();
+  </script>
+</body>
+</html>

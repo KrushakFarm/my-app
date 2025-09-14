@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KrushakFarm - Connecting Farmers & Consumers</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">KrushakFarm</div>
+    <div class="nav-links">
+      <a href="seller-login.html" class="nav-button">Farmers Dashboard</a>
+      <a href="index.html">Home</a>
+      <a href="search.html">All Products</a>
+      <input type="text" placeholder="Search products" aria-label="Search products" />
+
+      <!-- Cart + Profile -->
+      <div class="user-actions">
+        <!-- Cart -->
+        <a class="cart-btn" href="cart.html">
+          <span class="cart-icon">🛒</span>
+          <p>Cart</p>
+          <span class="cart-count" id="cart-count">0</span>
+        </a>
+
+        <!-- Profile dropdown (hidden before login) -->
+        <div class="profile-menu hidden" id="profileMenu">
+          <img src="images/profile.png" alt="Profile Icon" class="profile-icon" />
+          <div class="dropdown hidden" id="dropdownMenu">
+            <a href="#">My Profile</a>
+            <a href="my-orders.html">My Orders</a>
+            <a href="#" onclick="logoutUser()">Logout</a>
+          </div>
+        </div>
+
+        <!-- Login button (before login) -->
+        <button type="button" class="login-btn" id="loginBtn">Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Freshness You Can Trust,<br>Savings You Will Love!</h1>
+      <button class="shop-btn" type="button">Shop now</button>
+    </div>
+    <div class="hero-image">
+      <img src="images/main-image-path.png" alt="Fresh groceries on a table" />
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories">
+    <h2>Categories</h2>
+    <div class="category-list">
+      <a href="category.html?category=Vegetables" class="category-button">Organic Veggies</a>
+      <a href="category.html?category=Fruits" class="category-button">Fresh Fruits</a>
+      <a href="category.html?category=Dairy" class="category-button">Dairy Products</a>
+      <a href="category.html?category=Grains" class="category-button">Grains & Cereals</a>
+    </div>
+  </section>
+
+  <!-- Main dynamic content -->
+  <main id="main-content"></main>
+
+  <!-- Best Sellers -->
+  <section class="best-sellers">
+    <h2>Best Sellers</h2>
+    <div class="product-container" id="product-container">
+      <!-- Products will be dynamically inserted here -->
+    </div>
+  </section>
+
+  <!-- Popup Message -->
+  <div id="popupMessage" class="popup-message" aria-live="polite">
+    <span id="popupText"></span>
+  </div>
+
+  <!-- Login / Signup Modal -->
+  <div id="authModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+
+      <h2 id="modalTitle">Login</h2>
+
+      <!-- Login form -->
+      <form id="loginForm" class="auth-form">
+        <input type="email" id="loginEmail" placeholder="Email" required />
+        <div class="password-box">
+          <input type="password" id="loginPassword" placeholder="Password" required />
+          <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</span>
+        </div>
+        <p id="loginError" class="login-error hidden"></p> 
+        <button type="submit" class="auth-btn">Login</button>
+        <p class="switch">Don’t have an account? <a href="#" id="showSignup">Sign up</a></p>
+      </form>
+
+      <!-- Signup form -->
+      <form id="signupForm" class="auth-form hidden">
+        <input type="text" id="signupName" placeholder="Full Name" required />
+        <input type="email" id="signupEmail" placeholder="Email" required />
+        <div class="password-box">
+          <input type="password" id="signupPassword" placeholder="Password" required oninput="checkStrength(this.value)" />
+          <span class="toggle-password" onclick="togglePassword('signupPassword', this)">👁️</span>
+        </div>
+        <p id="passwordStrength" class="strength-text"></p>
+        <button type="submit" class="auth-btn">Sign Up</button>
+        <p class="switch">Already have an account? <a href="#" id="showLogin">Login</a></p>
+      </form>
+    </div>
+  </div>
+<script src="js/homepage.js"></script>
+<script src="script.js" defer></script>
+</body>
+</html>

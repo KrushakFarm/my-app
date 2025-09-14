@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KrushakFarm - Your Cart</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      color: #2d7a2d;
+      text-align: center;
+    }
+    .cart-container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 0;
+    }
+    .cart-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-right: 1rem;
+    }
+    .item-info {
+      flex-grow: 1;
+    }
+    .item-info h4 {
+      margin: 0 0 0.3rem;
+      color: #333;
+    }
+    .item-info p {
+      margin: 0.2rem 0;
+      color: #555;
+    }
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .quantity-btn {
+      background-color: #2d7a2d;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .quantity-btn:hover {
+      background-color: #246b24;
+    }
+    .quantity-display {
+      min-width: 40px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .remove-btn {
+      background-color: #e74c3c;
+      border: none;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    .remove-btn:hover {
+      background-color: #c0392b;
+    }
+    .total {
+      text-align: right;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2d7a2d;
+    }
+    .empty-cart {
+      text-align: center;
+      color: #777;
+      font-size: 1.1rem;
+      padding: 2rem 0;
+    }
+    .payment-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .payment-buttons button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .upi-btn {
+      background-color: #4a90e2;
+      color: white;
+    }
+    .cod-btn {
+      background-color: #27ae60;
+      color: white;
+    }
+    .login-prompt {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+    .login-btn {
+      background-color: #2d7a2d;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    /* QR Modal Styles */
+    .qr-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-modal-content {
+      background: white;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      border-radius: 12px;
+      text-align: center;
+      animation: slideUp 0.4s ease-out;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .qr-modal-content h2 {
+      margin-bottom: 0.5rem;
+      color: #2d7a2d;
+    }
+    .qr-modal-content p {
+      color: #444;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .qr-code-box {
+      margin: 1.5rem 0;
+    }
+    .close-btn {
+      background-color: #e74c3c;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Shopping Cart</h1>
+  <div class="cart-container" id="cart-container">
+    <!-- Cart items will be dynamically inserted here -->
+  </div>
+
+  <!-- QR Payment Modal -->
+  <div class="qr-modal" id="qr-modal">
+    <div class="qr-modal-content">
+      <h2>Pay via UPI</h2>
+      <p>Scan the QR code below to complete your payment securely</p>
+      <div class="qr-code-box" id="qrcode" style="display: flex; justify-content: center; margin: 20px 0;"></div>
+      <strong><p id="qr-amount"></p></strong>
+      <button class="close-btn" onclick="closeQRModal()">Back to Cart</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api";
+    const cartContainer = document.getElementById('cart-container');
+    let authToken = localStorage.getItem('authToken');
+
+    // Initialize cart page
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!authToken) {
+        showLoginPrompt();
+      } else {
+        loadCart();
+      }
+    });
+
+    function showLoginPrompt() {
+      cartContainer.innerHTML = `
+        <div class="login-prompt">
+          <h3>Please Login to View Your Cart</h3>
+          <p>You need to be logged in to manage your shopping cart.</p>
+          <button class="login-btn" onclick="redirectToLogin()">Login</button>
+        </div>
+      `;
+    }
+
+    function redirectToLogin() {
+      window.location.href = 'index.html';
+    }
+
+    async function loadCart() {
+      try {
+        const res = await fetch(`${API_URL}/cart`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            showLoginPrompt();
+            return;
+          }
+          throw new Error('Failed to load cart');
+        }
+
+        const cartItems = await res.json();
+        renderCart(cartItems);
+
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        cartContainer.innerHTML = '<p class="empty-cart">Please try again.</p>';
+      }
+    }
+
+    function renderCart(cartItems) {
+      if (!cartItems || cartItems.length === 0) {
+        cartContainer.innerHTML = `
+          <div class="empty-cart">
+            <p>Your cart is empty.</p>
+            <button class="login-btn" onclick="window.location.href='index.html'">Continue Shopping</button>
+          </div>
+        `;
+        return;
+      }
+
+      let totalPrice = 0;
+      let cartHTML = '';
+
+      cartItems.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        totalPrice += itemTotal;
+
+        cartHTML += `
+          <div class="cart-item" data-product-id="${item.productId}">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='images/placeholder.png'" />
+            <div class="item-info">
+              <h4>${item.name}</h4>
+              <p>Price: ₹${item.price} per ${item.unit}</p>
+              <div class="quantity-controls">
+                <button class="quantity-btn" onclick="updateQuantity('${item.productId}', ${item.quantity - 1})">-</button>
+                <span class="quantity-display">${item.quantity}</span>
+                <button class="quantity-btn" onclick="updateQuantity('${item.productId}', ${item.quantity + 1})">+</button>
+              </div>
+              <p>Subtotal: ₹${itemTotal.toFixed(2)}</p>
+            </div>
+            <button class="remove-btn" onclick="removeFromCart('${item.productId}')">Remove</button>
+          </div>
+        `;
+      });
+
+      cartHTML += `
+        <div class="total">
+          Total Price: ₹${totalPrice.toFixed(2)}
+        </div>
+        <div class="payment-buttons">
+          <button class="upi-btn" onclick="openQRModal(${totalPrice})">Pay via UPI QR</button>
+          <button class="cod-btn" onclick="placeOrder('cod', ${totalPrice})">Cash on Delivery</button>
+        </div>
+      `;
+
+      cartContainer.innerHTML = cartHTML;
+    }
+
+    async function updateQuantity(productId, newQuantity) {
+      if (newQuantity <= 0) {
+        removeFromCart(productId);
+        return;
+      }
+
+      try {
+        // Remove the item first
+        await fetch(`${API_URL}/cart/${productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        // Add it back with new quantity
+        for (let i = 0; i < newQuantity; i++) {
+          await fetch(`${API_URL}/cart/add`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ productId })
+          });
+        }
+
+        loadCart(); // Refresh cart display
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+        alert('Error updating quantity. Please try again.');
+      }
+    }
+
+    async function removeFromCart(productId) {
+      try {
+        const res = await fetch(`${API_URL}/cart/${productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (res.ok) {
+          loadCart(); // Refresh cart
+        } else {
+          throw new Error('Failed to remove item');
+        }
+      } catch (error) {
+        console.error('Error removing from cart:', error);
+        alert('Error removing item. Please try again.');
+      }
+    }
+
+    async function placeOrder(paymentMethod, totalAmount) {
+      try {
+        const res = await fetch(`${API_URL}/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ paymentMethod })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          alert(`Order placed successfully!\nTotal: ₹${data.totalAmount.toFixed(2)}`);
+          loadCart();
+        } else {
+          // Don't logout on order failure - just show error
+          if (res.status === 401) {
+            alert('Session expired. Please login again to place order.');
+            showLoginPrompt(); // Don't clear token automatically
+          } else {
+            throw new Error(data.message || 'Failed to place order');
+          }
+        }
+      } catch (error) {
+        console.error('Error placing order:', error);
+        alert('Error placing order: ' + error.message);
+        // Don't trigger logout on network errors
+      }
+    }
+
+    function openQRModal(amount) {
+      const modal = document.getElementById('qr-modal');
+      const qrContainer = document.getElementById('qrcode');
+      const qrAmount = document.getElementById('qr-amount');
+
+      const upiId = "8106625257@airtel";
+      const name = "V Manohar";
+      const note = "Payment for KrushakFarm Order";
+
+      const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount.toFixed(2)}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+      qrContainer.innerHTML = ''; // Clear old QR code
+      new QRCode(qrContainer, {
+        text: upiLink,
+        width: 200,
+        height: 200
+      });
+
+      qrAmount.innerText = `Amount: ₹${amount.toFixed(2)}`;
+      modal.style.display = 'flex';
+    }
+
+    function closeQRModal() {
+      document.getElementById('qr-modal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
